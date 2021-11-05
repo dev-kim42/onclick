@@ -9,7 +9,7 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>ONclick Main</title>
-        <link href="<%=request.getContextPath() %>/resources/css/styles.css" rel="stylesheet" />
+        <link href="../resources/css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="bg-light">
@@ -176,7 +176,7 @@
                 </footer>
             </div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-		<script src="<%=request.getContextPath() %>/resources/js/scripts.js"></script>
+		<script src="../resources/js/scripts.js"></script>
 		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 		<script type="text/javascript">
 		var idCheck=0;

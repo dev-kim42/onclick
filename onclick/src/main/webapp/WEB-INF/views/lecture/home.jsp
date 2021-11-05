@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="com.onclick.app.domain.*" %>
+<%LecVO lv = (LecVO)request.getAttribute("lv"); %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -50,7 +52,7 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                      <div class="sb-sidenav-menu">
 						<div class="nav-link collapsed">
-							강의이름
+							<%=lv.getLname() %>
 						<img alt="" src="../resources/assets/img/home.png">
 						</div>
                         <div class="nav">

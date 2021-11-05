@@ -1,7 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="com.onclick.app.domain.*" %>
 
+<%ArrayList<EnrollDTO> alist = (ArrayList<EnrollDTO>)request.getAttribute("alist"); %>
+<%List<Map<String,Object>>  list = (List<Map<String,Object>>)request.getAttribute("list"); %>
+<%List<String> tunameList = (List<String>)request.getAttribute("tunameList"); %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,23 +18,14 @@
         <meta name="author" content="" />
         <title>ONclick Main</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
-        <link href="../resources/css/styles.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/resources/css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-         <script type="text/javascript">
-        //회원완료 알림안뜸 
-        var msg = '${msg2}';
-        alert("msmsmsmsmms"+msg);
-    	if(msg != ""){
-    		alert(msg);
-    	}
-        
-        </script>     
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
             <a class="navbar-brand ps-3" href="<%=request.getContextPath()%>/">
-           	<img alt="" src="../resources/assets/img/ex.png" id="logo">
+           	<img alt="" src="<%=request.getContextPath()%>/resources/assets/img/ex.png" id="logo">
             | ONclick 
             <span class="fs-6">online non-contact system</span>
             </a>
@@ -83,7 +80,7 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                      <div class="sb-sidenav-menu">
 						<div class="nav-link collapsed">
-						<img alt="" src="../app/resources/assets/img/user.png">
+						<img alt="" src="<%=request.getContextPath() %>/resources/assets/img/user.png">
 							홍길동님
 						</div>
                         <div class="nav">
@@ -95,7 +92,7 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="<%=request.getContextPath()%>/student/pwdCheck.do">정보 수정</a>
+                                    <a class="nav-link" href="<%=request.getContextPath()%>/pwdCheck.do">정보 수정</a>
                                 </nav>
                             </div>
                           	<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLec" aria-expanded="false" aria-controls="collapseLec">
@@ -105,9 +102,9 @@
                             </a>
                             <div class="collapse" id="collapseLec" aria-labelledby="headingTh" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <a class="nav-link" href="<%=request.getContextPath()%>/lecture/home.do">강의1</a>
-                                    <a class="nav-link" href="layout-static.html">강의1</a>
-                                    <a class="nav-link" href="layout-static.html">강의1</a>
+                                	<% for(EnrollDTO ed : alist) { %>
+	                                    <a class="nav-link" href="<%=request.getContextPath()%>/student/lecHome.do?lidx=<%=ed.getLidx()%>"><%=ed.getLname() %></a>
+                                    <% } %>
                                 </nav>
                             </div>
                              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -142,8 +139,13 @@
                                 <div class="card bg-primary text-white mb-4">
                                     <div class="card-body">강의목록</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                       <table class="text-center">
+                                       	<% for(EnrollDTO ed : alist) { %>
+											<tr>
+											<td><a style="color:white; text-decoration:none;" href="<%=request.getContextPath()%>/student/lecHome.do?lidx=<%=ed.getLidx()%>"><%=ed.getLname() %></td>
+											</tr>
+										<% } %>
+                                       </table>
                                     </div>
                                 </div>
                             </div>
@@ -151,8 +153,13 @@
                                 <div class="card bg-warning text-white mb-4">
                                     <div class="card-body">과제</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                       <table class="text-center">
+                                       	<% for(String tuname : tunameList) { %>
+											<tr>
+											<td><a style="color:white; text-decoration:none;" href="<%=request.getContextPath()%>/student/taskContent.do?tuname=<%=tuname%>"><%=tuname%></td>
+											</tr>
+										<% } %>
+                                       </table> 
                                     </div>
                                 </div>
                             </div>
@@ -203,11 +210,11 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="../resources/js/scripts.js"></script>
+        <script src="<%=request.getContextPath()%>/resources/js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="../resources/assets/demo/chart-area-demo.js"></script>
-        <script src="../resources/assets/demo/chart-bar-demo.js"></script>
+        <script src="<%=request.getContextPath()%>/resources/assets/demo/chart-area-demo.js"></script>
+        <script src="<%=request.getContextPath()%>/resources/assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-        <script src="../resources/js/datatables-simple-demo.js"></script>
+        <script src="<%=request.getContextPath()%>/resources/js/datatables-simple-demo.js"></script>
     </body>
 </html>

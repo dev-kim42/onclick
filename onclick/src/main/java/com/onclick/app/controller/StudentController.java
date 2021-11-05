@@ -2,7 +2,8 @@
 package com.onclick.app.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.onclick.app.domain.EnrollDTO;
 import com.onclick.app.domain.LecVO;
 import com.onclick.app.domain.StudentVO;
+import com.onclick.app.domain.TaskVO;
 import com.onclick.app.service.StudentService;
 
 @Controller
@@ -46,53 +48,6 @@ public class StudentController {
 		return "redirect:/";
 	}
 	
-
-	
-	@RequestMapping(value="/student/stuLogin.do")
-	public String studentLogin( @RequestParam("stuId") int sidx,
-								@RequestParam("stuPwd") String spwd,
-								RedirectAttributes rttr) {
-		//학생 로그인 후 대시보드 이동
-		String str = "";
-		StudentVO sv = ss.studentLogin(sidx, spwd);
-		
-		if(sv != null) { 
-			//로그인 성공 시
-			//강의 이름 가져오기(대시보드-강의목록)
-			System.out.println("로그인 성공");
-			ArrayList<EnrollDTO> alist = ss.stuLecSelectAll(sidx);
-			rttr.addAttribute("alist", alist);
-			rttr.addFlashAttribute("msg2", "로그인 성공");
-			System.out.println("======");
-			str = "redirect:/student/stuDashBoard.do";	
-		} else {
-			//로그인 실패 시 
-			rttr.addFlashAttribute("msg3", "로그인 실패");
-			str = "redirect:/";
-		}
-		
-		return str;
-	}
-	
-	@RequestMapping(value="/student/stuDashBoard.do")
-	public String studentLecHome() {
-
-		
-		return "/student/stuDashBoard";
-	}
-/*	
-	//학생  강의 홈 이동
-	@RequestMapping(value="/student/lecHome.do")
-	public String studentLecHome(@RequestParam("lidx") int lidx,
-								 Model model) {
-		
-		//학생이 선택한 강의의 메인 홈으로 이동
-		LecVO lv = ss.stuLecHome(lidx);
-		model.addAttribute("lv", lv);
-		
-		return "/lecture/home";
-	}
-*/
 	
 	@RequestMapping(value="/student/pwdCheck.do")
 	public String studentModify() {
@@ -100,6 +55,72 @@ public class StudentController {
 		return "/student/pwdCheck";
 	}
 	
+	
+	@RequestMapping(value="/student/stuLogin.do")
+	public String studentLogin( @RequestParam("stuId") int sidx,
+								@RequestParam("stuPwd") String spwd,
+								Model model) {
+		//학생 로그인 후 대시보드 이동
+		String str = "";
+		StudentVO sv = ss.studentLogin(sidx, spwd);
+		
+		if(sv != null) { 
+			//로그인 성공 시
+			//대시보드-강의목록
+			System.out.println("로그인 성공");
+			ArrayList<EnrollDTO> alist = ss.stuLecSelectAll(sidx);
+			model.addAttribute("alist", alist);
+			
+			//대시보드-과제목록
+			List<Map<String,Object>> list = ss.stuTaskSelectAll(sidx);
+//			System.out.println(list.get(1).get("LIDX").toString());
+			List<String> tunameList = new ArrayList<String>();
+			for(Map<String,Object> data : list) {
+				tunameList.add(data.get("TUNAME").toString());
+			}
+//			System.out.println(tnameList);
+			model.addAttribute("list", list);
+			model.addAttribute("tunameList", tunameList);
+			
+//			System.out.println(alist);
+//			rttr.addAttribute("alist", alist);
+
+			str = "student/stuDashBoard";	
+		} else {
+			//로그인 실패 시 
+//			rttr.addFlashAttribute("msg3", "로그인 실패");
+			str = "redirect:/";
+		}
+		
+		return str;
+	}
+	
+//	@RequestMapping(value="/student/stuDashBoard.do")
+//	public String studentLoginSuc() {
+//		return "student/stuDashBoard";
+//	}
+
+	
+	@RequestMapping(value="/student/lecHome.do")
+	public String studentLecHome(@RequestParam("lidx") int lidx,
+								 Model model) {
+		
+		//대시보드 강의 목록에서 강의 메인 홈으로 넘어가기
+		LecVO lv = ss.stuLecHome(lidx);
+		model.addAttribute("lv", lv);
+		
+		return "lecture/home";
+	}
+
+	
+	@RequestMapping(value="/student/taskContent.do")
+	public String studentTaskContent(@RequestParam("tuname") String tuname,
+									 Model model) {
+		//대시보드 과제 목록에서 과제 내용보기로 넘어가기
+		
+		return "";
+	}
+
 	/*
 	@RequestMapijping(value="/.do")
 	public String studentModifyAction() {

@@ -17,7 +17,7 @@ WHERE sidx=#{sidx}
 </update>
 
 <select id="studentLogin" parameterType="HashMap" resultType="sv">
-<![CDATA[select * from onclick_student where sdelyn='N' and sidx=#{id} and spwd=#{pwd}]]>
+select * from onclick_student where sdelyn='N' and sidx=#{id} and spwd=#{pwd}
 </select>
 
 <select id="stuLecSelectAll" parameterType="int" resultType="ed">
@@ -25,7 +25,7 @@ select a.eidx, a.sidx, a.lidx, b.lname
 from onclick_enroll a
 inner join onclick_prolec b
 on a.lidx = b.lidx
-where a.sidx=#{id}
+where a.sidx=#{sidx}
 </select>
 	
 <select id="stuLecHome" parameterType="int" resultType="lv">
@@ -33,5 +33,21 @@ select * from onclick_prolec
 where ldelyn='N' 
 and lidx=#{lidx}
 </select>
-	
+
+<select id="stuTaskSelectAll" parameterType="int" resultType="HashMap">
+select a.eidx, a.sidx, a.lidx, b.tuname
+from onclick_enroll a
+inner join onclick_taskupload b
+on a.lidx = b.lidx
+where a.sidx=#{id}
+</select>
+
+<select id="stuTaskContent" parameterType="String" resultType="tv">
+select *
+from onclick_taskupload
+where tedelyn='n'
+and tuname=#{tuname}
+order by tudate desc
+limit 5
+</select>
 </mapper>
