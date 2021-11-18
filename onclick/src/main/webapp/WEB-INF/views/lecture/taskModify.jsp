@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="com.onclick.app.domain.*" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%LecVO lv = (LecVO)session.getAttribute("lv"); %>
 <%TaskVO tv = (TaskVO)session.getAttribute("tv"); %>
+<%SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -133,7 +135,8 @@
                 	</ol>
             	<main>
 					<div class="container-fluid px-4 ">
-						<table class="table mx-auto bg-light" style="width:80%">   
+					<form name="frm">
+						<table class="table mx-auto bg-light" style="width:80%">
 							<tbody>
 								<tr>
 							    	<td scope="row" class="text-secondary" style="border-bottom:0; text-align:left; width:10%">제목</td>
@@ -144,31 +147,44 @@
 							    <tr>
 							    	<td class="text-secondary" style="border-bottom:0; text-align:left; width:15%">제출 시작일</td>
 							      	<td style="border-bottom:0; width:35%">
-							      		<input class="form-control" type="date" style="border:0; width:100%" value="<%=tv.getTustart()%>"></td>
+							      		<input class="form-control" type="date" name="taskStart" style="border:0; width:100%" value="<%=tv.getTustart() %>"></td>
 									</td>
 									<td class="text-secondary" style="border-bottom:0; text-align:left; width:15%">제출 종료일</td>
 									<td style="border-bottom:0; width:35%">
-							      		<input class="form-control" type="date" style="border:0; width:100%" value="<%=tv.getTufin()%>"></td>
+							      		<input class="form-control" type="date" name="taskFin" style="border:0; width:100%" value="<%=tv.getTufin()%>"></td>
 									</td>
 							    </tr>
 							    <tr>
 							    	<td scope="row" class="text-secondary" style="border-bottom:0; text-align:left; width:10%">첨부 파일</td>
 							      	<td colspan="3" style="border-bottom:0; width:90%">
-							      		<input class="form-control" id="inputLNfile" type="file" placeholder="" /> 
+							      	<%if(session.getAttribute("fv") == null){ %>
+							      		<input class="form-control" name="taskFile" type="file" multiple/> 
+							      		<%} else { 
+							      			FileVO fv = (FileVO)session.getAttribute("fv"); %>
+							      		<input class="form-control" name="taskFile" type="file" placeholder="<%=fv.getForiginname () %>" multiple/>
+							      		<%} %>
 							      	</td>
 							    </tr>
+							    <%if(session.getAttribute("fv") != null) {
+							    	FileVO fv = (FileVO)session.getAttribute("fv"); %>
+								    <tr class="exFile">
+								    	<td scope="row" style="border-bottom:0; text-align:left; width:10%"></td>
+								    	<td colspan="2" style="border-bottom:0; width:80%;"><a href="<%=request.getContextPath()%>/taskFileDownload.do?fidx=<%=fv.getFidx()%>"><%=fv.getForiginname() %></a></td>
+								    	<td style="border-bottom:0; text-align:right; width:10%"><button type="button" id="taskFileDel" class="btn btn-sm">X</button></td>
+								    </tr>
+							    <%} %>
 							    <tr>
-							    	<td colspan="4" style="border-bottom:0"><input type="text" style="width:100%; height:300px; border:0; solid; black" value="<%=tv.getTucontents()%>"></td>
+							    	<td colspan="4" style="border-bottom:0"><input type="text" name="taskContents" style="width:100%; height:300px; border:0; solid; black" value="<%=tv.getTucontents()%>"></td>
 							    </tr>
 							    <tr>
 							    	<td scope="row" class="text-secondary" style="border-bottom:0; text-align:left; width:10%">알림 전송</td>
 							      	<td colspan="3" style="border-bottom:0; width:90%">
-							      		<input class="form-check-input" type="radio" name="flexRadioDefault" id="taskAlarmY" checked>
-											<label class="form-check-label" for="taskAlarmY" >
+							      		<input class="form-check-input" type="radio" name="taskNotice" value="Y" checked>
+											<label class="form-check-label" for="taskNotice" >
 											발송
 											</label>
-										<input class="form-check-input" type="radio" name="flexRadioDefault" id="taskAlarmN">
-											<label class="form-check-label" for="taskAlarmN">
+										<input class="form-check-input" type="radio" name="taskNotice" value="N">
+											<label class="form-check-label" for="taskNotice">
 											미발송
 											</label>
 									</td>
@@ -177,8 +193,9 @@
 						</table>
 						<div class="form-row text-center mb-2">
 							<button type="button" class="btn btn-secondary btn-sm" style="width:80px">취소</button>
-							<button type="button" class="btn btn-secondary btn-sm" style="width:80px">완료</button>
+							<button type="button" class="btn btn-secondary btn-sm" style="width:80px" onclick="check(); return false;">완료</button>
                     	</div>
+                    	</form>
                 	</div>	
                 </main>
                 <footer class="py-4 bg-light mt-auto">
@@ -202,5 +219,58 @@
         <script src="../app/resources/assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="../app/resources/js/datatables-simple-demo.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function(){
+	        $('#taskFileDel').click(function(){
+				alert("!");
+	        	
+				var fidx = null;
+				if(session.getAttribute("fv") != null){
+	        		FileVO fv = (FileVO)session.getAttribute("fv"); 
+	        		fidx = fv.getFidx();
+	        	}
+				var tuidx = '<%=tv.getTuidx()%>';
+				
+					$.ajax({
+						url:'<%=request.getContextPath()%>/tExFileDelete.do',
+						data: {"fidx":fidx,
+							   "tuidx":tuidx},
+						dataType:'JSON',
+						type:'POST',
+						error: function(){
+							alert("에러입니다."); },
+						success:function(data){
+							if(data.value == 2) {
+								$('.exFile').css("display", "none");
+								alert("삭제되었습니다.");
+							} else {
+								alert("파일이 삭제되지 않았습니다.");
+							}
+						}
+					});
+	        	});
+	    });   
+        
+        function check() {
+			var fm= document.frm;
+			
+			if(fm.taskStart.value == ""){
+				alert("시작일을 선택하세요");
+				fm.taskStart.focus();
+				return false;
+			}else if(fm.taskFin.value == ""){
+				alert("종료일을 선택하세요");
+				fm.taskFin.focus();
+				return false;
+			}
+			
+				fm.action="<%=request.getContextPath()%>/taskModifyAction.do?tuidx=<%=tv.getTuidx()%>";
+				fm.method = "post";
+				fm.enctype="multipart/form-data";
+				fm.submit();
+				
+			};
+        </script>
     </body>
 </html>

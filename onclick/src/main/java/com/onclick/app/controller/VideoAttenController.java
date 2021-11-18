@@ -1,6 +1,7 @@
 //211027 jhr 작업
 package com.onclick.app.controller;
 
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,12 +35,13 @@ public class VideoAttenController {
 
 	@ResponseBody
 	@RequestMapping(value="/videoEnd.do")
-	public int videoEnd(VideoAttenDto vd) {
+	public int videoEnd(VideoAttenDto vd, HttpSession session) {
 		//시청중 멈춘경우(창을 닫은 경우, 로그아웃된 경우, 정지버튼을 누른경우)
 		//전체시간,시작시간,종료시간 받아옴
+		vd.setSidx((Integer)session.getAttribute("sidx"));
 		int result=vs.videoUpdate(vd);
-		
-		return 1;
+
+		return result;
 	}
 	
 	/*
@@ -52,7 +54,7 @@ public class VideoAttenController {
 	 */
 
 	
-	@RequestMapping(value="/lecContent.do")
+	@RequestMapping(value="/stuLecContent.do")
 	public String lecContent(@RequestParam("sidx") int sidx, @RequestParam("cidx") int cidx, Model model) {
 		//학생 동영상 출석 화면
 		VideoAttenDto vd = vs.videoSelectOne(sidx, cidx);
@@ -61,11 +63,12 @@ public class VideoAttenController {
 		return "lecture/lecContent_p";
 	}
 	
-/*	
-	@RequestMapping(value="/.do")
-	public String videoProAtten() {
+	
+	@RequestMapping(value="/proLecContent.do")
+	public String videoProAtten(@RequestParam("pidx") int pidx, @RequestParam("cidx") int cidx, Model model) {
 		//교수 동영상 출석 화면
+		System.out.println();
 		return null;
 	}
-*/	
+	
 }

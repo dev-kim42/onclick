@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="com.onclick.app.domain.*" %>
-<%TaskVO tv = (TaskVO)session.getAttribute("tv"); %>
+<%@ page import="java.util.ArrayList" %>
 <%LecVO lv = (LecVO)session.getAttribute("lv"); %>
-<%S_taskDTO std = (S_taskDTO)session.getAttribute("std"); %>
+<%ArrayList<S_taskDTO> submitList = (ArrayList<S_taskDTO>)request.getAttribute("submitList");  %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -48,7 +48,7 @@
 				<a class="dropdown-item d-flex align-items-center" href="#">
                     <div class="mr-3">
                         <div class="icon-circle bg-secondary">
-                           <img src="../resources/assets/img/upload.svg" alt="Bootstrap" width="32" height="32"> 
+                           <img src="../app/resources/assets/img/upload.svg" alt="Bootstrap" width="32" height="32"> 
                         </div>
                     </div>
                     <div>
@@ -77,7 +77,7 @@
                      <div class="sb-sidenav-menu">
 						<div class="nav-link collapsed">
 						<%=lv.getLname() %>
-						<img alt="" src="../resources/assets/img/home.png">
+						<img alt="" src="../app/resources/assets/img/home.png">
 						</div>
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading"></div>
@@ -126,46 +126,46 @@
                     </div>
                 </nav>
             </div>
-            <!-- 과제 제출 화면-->
+            
             <div id="layoutSidenav_content">
-	            <h2 class="mt-4 ms-3">제출하기</h2>
-                	<ol class="breadcrumb mb-4 ms-4">
-                    	<li class="breadcrumb-item active"><%=tv.getTuname() %></li>
-                	</ol>
-            	<main> 
-            		<div class="container-fluid px-4 ">
-            		<form name="frm">
-						<table class="table mx-auto bg-light" style="width:80%">   
-							<thead>    
-								<tr>			      
-							      	<td colspan="4" scope="row" style="border:0;"><input class="form-control" type="text" name="s_taskSubject" style="border:0; black; width:100%" value="<%=std.getTsubject()%>"></td>
-							    </tr>
-							</thead>
-							<tbody>
-							    <tr>
-							    	<td scope="row" class="text-secondary" style="border-bottom:0; text-align:left; width:10%">제출기간</td>
-							      	<td colspan="3" style="border-bottom:0; width:90%">
-							      		<%=tv.getTustart().substring(0, 10) %> ~ <%=tv.getTufin().substring(0, 10) %>
-									</td>
-							    </tr>
-							    <tr>
-							    	<td scope="row" class="text-secondary" style="border-bottom:0; text-align:left; width:10%">첨부파일</td>
-					            	<td colspan="3" style="border-bottom:0; width:90%">
-							      		
-							      	</td>
-							    </tr>
-							    <tr>
-							    	<td colspan="4" style="border-bottom:0"><input type="text" name="s_taskContents" style="width:100%; height:300px; border:0; solid; black" value="<%=std.getTcontents()%>"></td>
-							    </tr>
-							</tbody>
-						</table>
-						<div class="form-row text-center mb-2">
-							<button type="button" class="btn btn-secondary btn-sm" style="width:80px">취소</button>
-							<button type="button" class="btn btn-secondary btn-sm" style="width:80px" onclick="check(); return false;">완료</button>
-                    	</div>
-                    </form>
-                	</div>
+               <main>
+					<h4 class="mt-4 pt-3 ps-5" style="font-weight:bold">과제 목록</h4>
+						<div class="card-body mx-auto d-block " style="width:80%">
+							<table class="table text-center">
+								<thead>
+									<tr class="table-secondary">
+										<th style="width:10%">No</th>
+									    <th style="width:20%">학번</th>
+									    <th style="width:40%">제목</th>
+									    <th style="width:15%">제출일</th>
+									    <th style="width:15%">제출여부</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% 	int i = 1;
+										for(S_taskDTO std : submitList) {%>
+										<tr>
+											<th scope="row"><%=i++%></th>
+											<td><%=std.getSidx() %></td>
+											<%if(std.getTsubject()==null) {%>
+										    	<td style="text-align:center">-</td>
+										    	<td style="text-align:center">-</td>
+											    <%} else{ %>
+											    	<td><a style="color:black; text-decoration:none;" href="<%=request.getContextPath()%>/stuTaskContent.do?tidx=<%=std.getTidx()%>"><%=std.getTsubject() %></a></td>
+											    	<td><%=std.getTdate().substring(0, 10) %></td>
+											    <%} %>
+										    <%if(std.getTsubyn().equals("Y")) {%>
+										    	<td style="color:blue; text-align:center">제출</td>
+											    <%} else{ %>
+											    	<td style="color:red; text-align:center">미제출</td>
+											    <%} %>
+									    </tr>
+								    <%} %>
+								</tbody>
+							</table>
+                        </div>
                 </main>
+                
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
@@ -187,16 +187,5 @@
         <script src="../app/resources/assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="../app/resources/js/datatables-simple-demo.js"></script>
-        <script type="text/javascript">
-			function check() {
-			
-				fm.action="<%=request.getContextPath()%>/stuTaskModifyAction.do?tidx=<%=std.getTidx()%>";
-				fm.method = "post";
-				fm.submit();
-				fm.enctype="multipart/form-data";
-				
-				return;
-		};
-		</script>
     </body>
 </html>
